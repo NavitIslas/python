@@ -1,0 +1,25 @@
+SELECT a.subscriberkey, a.correos_enviados, COALESCE(c.links_abiertos,0) AS links_abiertos, COALESCE(b.clicks_dados,0) AS clicks_dados,
+       CASE WHEN clicks_dados!=0 THEN 'ALCANZADO'
+            WHEN clicks_dados=0 THEN 'NO ALCANZADO'
+       END AS target
+FROM(SELECT subscriberkey, COUNT (sendid) AS correos_enviados
+     FROM (SELECT subscriberkey, sendid
+           FROM client_contact.slf_email_send_sent
+           WHERE info_day BETWEEN 20220101 AND 20221129
+           GROUP BY subscriberkey, sendid)
+     GROUP BY subscriberkey) AS a
+LEFT JOIN (SELECT subscriberkey, COUNT (sendid) AS clicks_dados
+           FROM (SELECT subscriberkey, sendid
+                 FROM client_contact.slf_email_send_clicks
+                 WHERE info_day BETWEEN 20220101 AND 20221129
+                 GROUP BY subscriberkey, sendid)
+           GROUP BY subscriberkey) AS b
+ON a.subscriberkey=b.subscriberkey
+LEFT JOIN (SELECT subscriberkey, COUNT (sendid) links_abiertos
+           FROM (SELECT subscriberkey, sendid
+                 FROM client_contact.slf_email_send_opens
+                 WHERE info_day BETWEEN 20220101 AND 20221129
+                 GROUP BY subscriberkey, sendid)
+           GROUP BY subscriberkey) AS c
+ON b.subscriberkey=c.subscriberkey
+LIMIT 1000;
