@@ -1,0 +1,179 @@
+--JUNIO
+SELECT COUNT(subscriberkey) AS total_correos, SUM(activos) AS correos_activos, SUM(rechazados) AS correos_rechazados, SUM(no_entregados) AS correos_no_entregados,
+       SUM(subscripcion_cancelada) AS correos_subscripcion_cancelada, SUM(suscritos_junio) AS correos_suscritos_junio, 
+       SUM(no_entregados_junio) AS correos_no_entregados_junio,SUM(subscripcion_cancelada_junio) AS correos_subscripcion_cancelada_junio
+FROM(SELECT subscriberkey, 
+            CASE WHEN  status='Active' THEN 1
+                 ELSE 0 
+            END AS activos,
+            CASE WHEN status='Bounced' THEN 1
+                 ELSE 0  
+            END AS rechazados,
+            CASE WHEN status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados,
+            CASE WHEN status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada,
+            CASE WHEN  DATE(datecreated) BETWEEN '2022-06-01' AND '2022-06-30' AND status='Active' THEN 1
+                 ELSE 0 
+            END AS suscritos_junio,
+            CASE WHEN  DATE(dateheld) BETWEEN '2022-06-01' AND '2022-06-30' AND status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados_junio,
+            CASE WHEN  DATE(dateunsubscribed) BETWEEN '2022-06-01' AND '2022-06-30' AND status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada_junio
+      FROM client_contact.slf_email_send_subscribers 
+      WHERE info_day BETWEEN 20220601 AND 20220630);
+
+
+--JULIO
+SELECT COUNT(subscriberkey) AS total_correos, SUM(activos) AS correos_activos, SUM(rechazados) AS correos_rechazados, SUM(no_entregados) AS correos_no_entregados,
+       SUM(subscripcion_cancelada) AS correos_subscripcion_cancelada, SUM(suscritos_julio) AS correos_suscritos_julio, 
+       SUM(no_entregados_julio) AS correos_no_entregados_julio,SUM(subscripcion_cancelada_julio) AS correos_subscripcion_cancelada_julio
+FROM(SELECT subscriberkey, 
+            CASE WHEN  status='Active' THEN 1
+                 ELSE 0 
+            END AS activos,
+            CASE WHEN status='Bounced' THEN 1
+                 ELSE 0  
+            END AS rechazados,
+            CASE WHEN status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados,
+            CASE WHEN status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada,
+            CASE WHEN  DATE(datecreated) BETWEEN '2022-07-01' AND '2022-07-31' AND status='Active' THEN 1
+                 ELSE 0 
+            END AS suscritos_julio,
+            CASE WHEN  DATE(dateheld) BETWEEN '2022-07-01' AND '2022-07-31' AND status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados_julio,
+            CASE WHEN  DATE(dateunsubscribed) BETWEEN '2022-07-01' AND '2022-07-31' AND status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada_julio
+      FROM client_contact.slf_email_send_subscribers 
+      WHERE info_day BETWEEN 20220701 AND 20220731); 
+
+
+
+--AGOSTO
+SELECT COUNT(subscriberkey) AS total_correos, SUM(activos) AS correos_activos, SUM(rechazados) AS correos_rechazados, SUM(no_entregados) AS correos_no_entregados,
+       SUM(subscripcion_cancelada) AS correos_subscripcion_cancelada, SUM(suscritos_agosto) AS correos_suscritos_agosto, 
+       SUM(no_entregados_agosto) AS correos_no_entregados_agosto,SUM(subscripcion_cancelada_agosto) AS correos_subscripcion_cancelada_agosto
+FROM(SELECT subscriberkey, 
+            CASE WHEN  status='Active' THEN 1
+                 ELSE 0 
+            END AS activos,
+            CASE WHEN status='Bounced' THEN 1
+                 ELSE 0  
+            END AS rechazados,
+            CASE WHEN status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados,
+            CASE WHEN status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada,
+            CASE WHEN  DATE(datecreated) BETWEEN '2022-08-01' AND '2022-08-31' AND status='Active' THEN 1
+                 ELSE 0 
+            END AS suscritos_agosto,
+            CASE WHEN  DATE(dateheld) BETWEEN '2022-08-01' AND '2022-08-31' AND status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados_agosto,
+            CASE WHEN  DATE(dateunsubscribed) BETWEEN '2022-08-01' AND '2022-08-31' AND status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada_agosto
+      FROM client_contact.slf_email_send_subscribers 
+      WHERE info_day BETWEEN 20220801 AND 20220831);
+
+
+--SEPTIEMBRE
+SELECT COUNT(subscriberkey) AS total_correos, SUM(activos) AS correos_activos, SUM(rechazados) AS correos_rechazados, SUM(no_entregados) AS correos_no_entregados,
+       SUM(subscripcion_cancelada) AS correos_subscripcion_cancelada, SUM(suscritos_septiembre) AS correos_suscritos_septiembre, 
+       SUM(no_entregados_septiembre) AS correos_no_entregados_septiembre,SUM(subscripcion_cancelada_septiembre) AS correos_subscripcion_cancelada_septiembre
+FROM(SELECT subscriberkey, 
+            CASE WHEN  status='Active' THEN 1
+                 ELSE 0 
+            END AS activos,
+            CASE WHEN status='Bounced' THEN 1
+                 ELSE 0  
+            END AS rechazados,
+            CASE WHEN status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados,
+            CASE WHEN status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada,
+            CASE WHEN  DATE(datecreated) BETWEEN '2022-09-01' AND '2022-09-30' AND status='Active' THEN 1
+                 ELSE 0 
+            END AS suscritos_septiembre,
+            CASE WHEN  DATE(dateheld) BETWEEN '2022-09-01' AND '2022-09-30' AND status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados_septiembre,
+            CASE WHEN  DATE(dateunsubscribed) BETWEEN '2022-09-01' AND '2022-09-30' AND status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada_septiembre
+      FROM client_contact.slf_email_send_subscribers 
+      WHERE info_day BETWEEN 20220901 AND 20220930);
+      
+
+--OCTUBRE
+SELECT COUNT(subscriberkey) AS total_correos, SUM(activos) AS correos_activos, SUM(rechazados) AS correos_rechazados, SUM(no_entregados) AS correos_no_entregados,
+       SUM(subscripcion_cancelada) AS correos_subscripcion_cancelada, SUM(suscritos_octubre) AS correos_suscritos_octubre, 
+       SUM(no_entregados_octubre) AS correos_no_entregados_octubre,SUM(subscripcion_cancelada_octubre) AS correos_subscripcion_cancelada_octubre
+FROM(SELECT subscriberkey, 
+            CASE WHEN  status='Active' THEN 1
+                 ELSE 0 
+            END AS activos,
+            CASE WHEN status='Bounced' THEN 1
+                 ELSE 0  
+            END AS rechazados,
+            CASE WHEN status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados,
+            CASE WHEN status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada,
+            CASE WHEN  DATE(datecreated) BETWEEN '2022-10-01' AND '2022-10-31' AND status='Active' THEN 1
+                 ELSE 0 
+            END AS suscritos_octubre,
+            CASE WHEN  DATE(dateheld) BETWEEN '2022-10-01' AND '2022-10-31' AND status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados_octubre,
+            CASE WHEN  DATE(dateunsubscribed) BETWEEN '2022-10-01' AND '2022-10-31' AND status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada_octubre
+      FROM client_contact.slf_email_send_subscribers 
+      WHERE info_day BETWEEN 20221001 AND 20221031);
+      
+
+--NOVIEMBRE
+SELECT COUNT(subscriberkey) AS total_correos, SUM(activos) AS correos_activos, SUM(rechazados) AS correos_rechazados, SUM(no_entregados) AS correos_no_entregados,
+       SUM(subscripcion_cancelada) AS correos_subscripcion_cancelada, SUM(suscritos_noviembre) AS correos_suscritos_noviembre, 
+       SUM(no_entregados_noviembre) AS correos_no_entregados_noviembre,SUM(subscripcion_cancelada_noviembre) AS correos_subscripcion_cancelada_noviembre
+FROM(SELECT subscriberkey, 
+            CASE WHEN  status='Active' THEN 1
+                 ELSE 0 
+            END AS activos,
+            CASE WHEN status='Bounced' THEN 1
+                 ELSE 0  
+            END AS rechazados,
+            CASE WHEN status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados,
+            CASE WHEN status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada,
+            CASE WHEN  DATE(datecreated) BETWEEN '2022-11-01' AND '2022-11-30' AND status='Active' THEN 1
+                 ELSE 0 
+            END AS suscritos_noviembre,
+            CASE WHEN  DATE(dateheld) BETWEEN '2022-11-01' AND '2022-11-30' AND status='Undeliverable' THEN 1
+                 ELSE 0 
+            END AS no_entregados_noviembre,
+            CASE WHEN  DATE(dateunsubscribed) BETWEEN '2022-11-01' AND '2022-11-30' AND status='unsub' THEN 1
+                 ELSE 0
+            END AS subscripcion_cancelada_noviembre
+      FROM client_contact.slf_email_send_subscribers 
+      WHERE info_day BETWEEN 20221101 AND 20221130);
