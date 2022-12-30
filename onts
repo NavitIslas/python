@@ -1,0 +1,96 @@
+Select account_obj_id0, count(*),status, POID_TYPE
+from data_staging.brm_service_t
+where 
+info_day=20221227
+and account_obj_id0=2575893207 -- cuenta = account_obj_id0
+group by account_obj_id0,status, POID_TYPE
+HAVING  count(*) > 1
+limit 100
+
+--AQUI EMPIEZA
+
+--CUENTA ESTATUS TIPO DE ONT
+Select account_obj_id0, count(*),status, POID_TYPE
+from data_staging.brm_service_t
+where 
+info_day=20221227
+and account_obj_id0=2575893207 -- cuenta = account_obj_id0
+group by account_obj_id0,status, POID_TYPE
+--HAVING  count(account_obj_id0) > 1
+limit 100;
+
+
+Select account_obj_id0, count(POID_TYPE),status, POID_TYPE
+from data_staging.brm_service_t
+where 
+info_day=20221227
+and account_obj_id0 in (SELECT account_obj_id0
+                        FROM data_staging.brm_service_t
+                        WHERE info_day=20221227
+                        GROUP BY account_obj_id0
+                        HAVING COUNT(account_obj_id0)>1)
+group by account_obj_id0,status, POID_TYPE
+--HAVING  count(account_obj_id0) > 1
+limit 100;
+
+--AQUI TERMINA
+
+
+SELECT *
+FROM data_staging.brm_service_t
+LIMIT 100;
+
+
+SELECT *
+FROM data_staging.brm_service_t
+WHERE info_day=20221227
+      AND account_obj_id0=2575893207 
+LIMIT 100;
+
+
+select * 
+from(select * 
+     from data_staging.brm_service_t
+     where 
+     info_day=20221227)as s
+inner join(select *
+           from staging_layer.brm_purchased_product_t
+           where info_day = 20221130)as pp
+on pp.account_obj_id0 = s.account_obj_id0 and pp.service_obj_id0 = s.poid_id0
+where s.account_obj_id0
+      and s.status = 10100
+limit 100
+
+select *
+from staging_layer.brm_purchased_product_t
+where info_day = 20221130
+      AND account_obj_id0=180472910964
+LIMIT 100;
+
+--CUENTA ESTATUS TIPO DE ONT
+Select account_obj_id0, count(*),status, POID_TYPE
+from data_staging.brm_service_t
+where 
+info_day=20221227
+and account_obj_id0=180472910964-- cuenta = account_obj_id0
+group by account_obj_id0,status, POID_TYPE
+--HAVING  count(account_obj_id0) > 1
+limit 100;
+
+--CUENTA ESTATUS TIPO DE ONT
+SELECT account_obj_id0, count(*),status, poid_id0, POID_TYPE
+       CASE WHEN poid_type= '/service/totalplay/tv'
+from data_staging.brm_service_t
+where 
+info_day=20221227
+and account_obj_id0=180472910964-- cuenta = account_obj_id0
+group by account_obj_id0,status, poid_id0, POID_TYPE
+--HAVING  count(account_obj_id0) > 1
+limit 100;
+
+
+--CUENTA ESTATUS TIPO DE ONT
+Select POID_TYPE
+from data_staging.brm_service_t
+where info_day=20221227
+group by  POID_TYPE
