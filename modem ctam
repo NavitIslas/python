@@ -1,0 +1,20 @@
+SELECT cuenta,
+       model_ont,
+       CASE
+         WHEN model_ont IN ('HG8045H','HG8247','HG8245','ZTEG-824X') THEN 'antiguo'
+         WHEN model_ont IN ('HG8245H','ZTEG-F660','FH-AN55060','AN5506-04-F') THEN 'seminuevo'
+         WHEN model_ont IN ('HG8145V5','F660V7.0','F670LV9.0','F670LV9.0B','HG6145F','ZTEG-F670','HG8145X6') THEN 'nuevo'
+       END AS p_model_ont,
+       version_fm,
+       vendor_ont 
+     FROM bi.cta_model_ont
+WHERE info_day = (SELECT MAX(info_day) FROM bi.cta_model_ont)
+AND p_model_ont is not null
+AND cuenta='1.4272457';
+
+cuenta='1.4272457' LIMIT 100;
+SELECT * FROM bigdata.tp_navegacion_internet WHERE info_day=20221130 AND client_address='10.193.103.140'
+
+SELECT *
+FROM bi.cta_model_ont
+WHERE cuenta='1.4272457';
