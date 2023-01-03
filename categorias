@@ -1,0 +1,22 @@
+SELECT * FROM data_lake.edr_aaa WHERE info_day=20221130 and cuenta='1.4272457' LIMIT 100;
+SELECT * FROM bigdata.tp_navegacion_internet WHERE info_day=20221130 AND client_address='10.193.103.140';
+
+SELECT *
+FROM bigdata.ts_catalogo_nss_sin_duplicados;
+
+SELECT a.client_address, b.category, COUNT(a.core_domain) AS dominios_visitados, SUM(a.visitas) as total_visitas
+FROM (SELECT client_address, core_domain, count(start_time) AS visitas
+      FROM bigdata.tp_navegacion_internet 
+      WHERE info_day=20221130 
+            AND client_address='10.193.103.140'
+      GROUP BY client_address, core_domain) AS a
+JOIN (SELECT core_domain, category
+      FROM bigdata.ts_catalogo_nss_sin_duplicados) AS b
+ON a.core_domain=b.core_domain
+GROUP BY a.client_address, b.category;
+
+SELECT client_address, core_domain, count(start_time) AS visitas 
+      FROM bigdata.tp_navegacion_internet 
+      WHERE info_day=20221130 
+            AND client_address='10.193.103.140'
+      GROUP BY client_address, core_domain;
