@@ -1,0 +1,39 @@
+--junio
+SELECT COUNT(subscriberkey)
+                      FROM  client_contact.slf_email_send_clicks
+                      WHERE info_day BETWEEN 20220601 AND 20220630;
+
+
+--julio
+SELECT COUNT(subscriberkey)
+                      FROM  client_contact.slf_email_send_clicks
+                      WHERE info_day BETWEEN 20220701 AND 20220731;
+                      
+
+--agosto
+SELECT COUNT(subscriberkey)
+                      FROM  client_contact.slf_email_send_clicks
+                      WHERE info_day BETWEEN 20220801 AND 20220831;
+                      
+
+--septiembre
+SELECT COUNT(subscriberkey)
+                      FROM  client_contact.slf_email_send_clicks
+                      WHERE info_day BETWEEN 20220901 AND 20220930;
+                      
+--octubre
+SELECT COUNT(subscriberkey)
+                      FROM  client_contact.slf_email_send_clicks
+                      WHERE info_day BETWEEN 20221001 AND 20221031;
+
+--Noviembre
+SELECT COUNT(subscriberkey)
+                      FROM  client_contact.slf_email_send_clicks
+                      WHERE info_day BETWEEN 20221101 AND 20221130;
+                      
+
+--Noviembre
+SELECT subscriberkey
+                      FROM  client_contact.slf_email_send_clicks
+                      WHERE info_day BETWEEN 20221101 AND 20221130
+                      LIMIT 100;
