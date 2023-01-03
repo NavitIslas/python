@@ -1,0 +1,121 @@
+select * from client_contact.slf_email_send_sent limit 100;
+
+select * from client_contact.slf_email_send_subscribers where info_day = 20220419 limit 100;
+select * from client_contact.slf_email_send_notsent limit 100;
+select * from client_contact.slf_email_send_statuschange limit 100;
+select * from client_contact.slf_email_send_opens limit 100;
+select * from client_contact.slf_email_send_clicks limit 100;
+select * from client_contact.slf_email_send_unsubs limit 100;
+
+
+SELECT *
+FROM client_contact.slf_email_send_sent
+WHERE info_day=20221031
+LIMIT 100;
+
+
+SELECT * 
+FROM client_contact.slf_email_send_clicks 
+WHERE info_day=20221031
+LIMIT 100;
+
+SELECT * 
+FROM client_contact.slf_email_send_opens 
+WHERE info_day=20221031
+LIMIT 100;
+  
+
+
+SELECT a.subscriberkey_e, a.sendid_e, b.subscriberkey_c, b.sendid_c
+FROM (SELECT subscriberkey AS subscriberkey_e, sendid AS sendid_e
+      FROM client_contact.slf_email_send_sent
+      WHERE info_day=20221031
+            AND subscriberkey in ('0100563698','0100551681')) AS a
+     LEFT JOIN
+     (SELECT subscriberkey AS subscriberkey_c, sendid AS sendid_c, 
+      FROM client_contact.slf_email_send_clicks 
+      WHERE info_day=20221031) AS b 
+     ON a.subscriberkey=b.subscriberkey
+WHERE a.sendid=b.sendid;
+
+SELECT a.subscriberkey AS subscriberkey_e, a.sendid AS sendid_e, a.eventdate AS eventdate_e,
+       b.subscriberkey AS subscriberkey_c, b.sendid AS sendid_c, b.eventdate AS eventdate_c
+FROM (SELECT subscriberkey, sendid, eventdate
+      FROM client_contact.slf_email_send_sent
+      WHERE info_day=20221031) AS a 
+LEFT JOIN (SELECT subscriberkey, sendid, eventdate
+           FROM client_contact.slf_email_send_clicks) AS b 
+ON a.subscriberkey=b.subscriberkey
+WHERE a.sendid=b.sendid
+GROUP BY a.subscriberkey, a.sendid, a.eventdate, b.subscriberkey, b.sendid, b.eventdate;
+
+
+SELECT a.subscriberkey AS subscriberkey_e, a.sendid AS sendid_e, a.eventdate AS eventdate_e,
+       b.subscriberkey AS subscriberkey_o, b.sendid AS sendid_o, b.eventdate AS eventdate_o
+FROM (SELECT subscriberkey, sendid, eventdate
+      FROM client_contact.slf_email_send_sent
+      WHERE info_day=20221031) AS a 
+LEFT JOIN (SELECT subscriberkey, sendid, eventdate
+           FROM client_contact.slf_email_send_opens) AS b 
+ON a.subscriberkey=b.subscriberkey
+WHERE a.sendid=b.sendid
+GROUP BY a.subscriberkey, a.sendid, a.eventdate, b.subscriberkey, b.sendid, b.eventdate;
+
+SELECT * 
+FROM client_contact.slf_email_send_clicks 
+WHERE info_day=20221031
+      AND subscriberkey in ( '0100322086', '0101240136', '0100322086', '0100230398', '0100590831')
+LIMIT 100;
+
+SELECT * 
+FROM client_contact.slf_email_send_opens 
+WHERE info_day=20221031
+      AND subscriberkey in ( '0100078681', '0104922748', '0109148404', '0109148404', '0105358584')
+LIMIT 100;
+
+SELECT subscriberkey, sendid
+FROM client_contact.slf_email_send_sent
+WHERE info_day BETWEEN 20220101 AND 20221129
+GROUP BY subscriberkey, sendid
+LIMIT 100;
+
+SELECT subscriberkey, COUNT (sendid)
+FROM (SELECT subscriberkey, sendid
+      FROM client_contact.slf_email_send_sent
+      WHERE info_day BETWEEN 20220101 AND 20221129
+      GROUP BY subscriberkey, sendid)
+GROUP BY subscriberkey
+LIMIT 100;
+
+
+SELECT subscriberkey, sendid
+      FROM client_contact.slf_email_send_clicks
+      WHERE info_day BETWEEN 20220101 AND 20221129
+      GROUP BY subscriberkey, sendid
+
+
+SELECT a.subscriberkey, a.correos_enviados, COALESCE(c.links_abiertos,0) AS links_abiertos, COALESCE(b.clicks_dados,0) AS clicks_dados,
+       CASE WHEN clicks_dados!=0 THEN 'ALCANZADO'
+            WHEN clicks_dados=0 THEN 'NO ALCANZADO'
+       END AS target
+FROM(SELECT subscriberkey, COUNT (sendid) AS correos_enviados
+     FROM (SELECT subscriberkey, sendid
+           FROM client_contact.slf_email_send_sent
+           WHERE info_day BETWEEN 20220101 AND 20221129
+           GROUP BY subscriberkey, sendid)
+     GROUP BY subscriberkey) AS a
+LEFT JOIN (SELECT subscriberkey, COUNT (sendid) AS clicks_dados
+           FROM (SELECT subscriberkey, sendid
+                 FROM client_contact.slf_email_send_clicks
+                 WHERE info_day BETWEEN 20220101 AND 20221129
+                 GROUP BY subscriberkey, sendid)
+           GROUP BY subscriberkey) AS b
+ON a.subscriberkey=b.subscriberkey
+LEFT JOIN (SELECT subscriberkey, COUNT (sendid) links_abiertos
+           FROM (SELECT subscriberkey, sendid
+                 FROM client_contact.slf_email_send_opens
+                 WHERE info_day BETWEEN 20220101 AND 20221129
+                 GROUP BY subscriberkey, sendid)
+           GROUP BY subscriberkey) AS c
+ON b.subscriberkey=c.subscriberkey
+LIMIT 1000;
