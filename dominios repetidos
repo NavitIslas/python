@@ -1,0 +1,78 @@
+--Dominios que se visitaron en un día y cuantas cuentas visitaron ese dominio 
+unload($$
+select core_domain, count(fecha_ingreso)
+from navegacion.client_address_cta
+where info_day = 20221015 
+group by core_domain
+      $$)
+TO 's3://data-lake-tp/proyectots/20221015/num_visitas_por_dominio_20221015.csv'
+PARALLEL OFF
+header 
+iam_role 'arn:aws:iam::903746939682:role/ReadTP'
+CSV DELIMITER AS  '|'
+GZIP;
+
+--Bases
+select * from nuevos_negocios.segmentos_url limit 100;
+select * from bigdata.p_ts_proyectots ;
+select * from bigdata.p_ts_proyectots_catalogo;
+--Los que estan en nuestra base que no estan en la de nuevos negocios
+SELECT  core_domain
+FROM bigdata.p_ts_proyectots
+where partition_0= 20221015
+MINUS
+SELECT  core_domain
+FROM nuevos_negocios.segmentos_url;
+
+
+--Dominios que se visitaron en un día y cuantas cuentas visitaron ese dominio 
+unload($$
+SELECT  core_domain
+FROM bigdata.p_ts_proyectots
+where partition_0= 20221015
+MINUS
+SELECT  core_domain
+FROM nuevos_negocios.segmentos_url
+      $$)
+TO 's3://data-lake-tp/proyectots_catalogo/20221015/dominios_a_clasificar202210.csv'
+PARALLEL OFF
+header 
+iam_role 'arn:aws:iam::903746939682:role/ReadTP'
+CSV DELIMITER AS  '|'
+GZIP;
+
+
+
+
+
+SELECT  category, COUNT(category)
+FROM nuevos_negocios.segmentos_url
+GROUP BY  category;
+
+
+SELECT  *
+FROM nuevos_negocios.segmentos_url
+WHERE category='damas';
+
+SELECT  *
+FROM nuevos_negocios.segmentos_url
+WHERE category='eventos';
+
+SELECT  core_domain, COUNT(category)
+FROM nuevos_negocios.segmentos_url
+GROUP BY core_domain
+HAVING COUNT(category)>1;
+
+SELECT  *
+FROM nuevos_negocios.segmentos_url
+WHERE core_domain='zorroabarrotero.com.mx.';
+
+SELECT  *
+FROM nuevos_negocios.segmentos_url
+WHERE category='retail departamentales';
+
+SELECT  *
+FROM nuevos_negocios.segmentos_url;
+
+SELECT *
+FROM bigdata.p_ts_proyectots_catalogo;
