@@ -1,0 +1,41 @@
+SELECT *
+FROM data_staging.brm_account_t
+LIMIT 100;
+
+select * 
+from nuevos_negocios.sepomex 
+limit 100000;
+
+select * 
+from data_staging.slf_cuentafactura__c 
+limit 100;
+
+SELECT cf.idcuentabrm__c, s.d_codigo, s.d_estado, s.d_asenta AS colonia
+FROM nuevos_negocios.sepomex s JOIN data_staging.slf_cuentafactura__c cf
+     ON s.d_codigo=cf.codigopostalinstalacion__c
+WHERE cf.info_day BETWEEN '20220501' and '20221115'
+LIMIT 100;
+
+SELECT *
+FROM bi.ds_edad_genero
+LIMIT 100;
+
+SELECT cf.idcuentabrm__c, cf.codigopostalinstalacion__c, s.d_codigo, s.d_estado, s.d_ciudad
+FROM (SELECT  d_codigo, d_estado, d_ciudad
+      FROM nuevos_negocios.sepomex 
+      GROUP BY   d_codigo, d_estado, d_ciudad) AS s 
+     JOIN (SELECT codigopostalinstalacion__c, idcuentabrm__c 
+           FROM data_staging.slf_cuentafactura__c 
+           WHERE idcuentabrm__c in ('0104555090','0104561319')
+           GROUP BY codigopostalinstalacion__c, idcuentabrm__c) AS cf
+     ON s.d_codigo=cf.codigopostalinstalacion__c
+LIMIT 100;
+
+SELECT *
+FROM data_staging.slf_cuentafactura__c 
+LIMIT 100;
+
+select  d_codigo, d_estado, d_ciudad
+from nuevos_negocios.sepomex 
+where d_codigo in ('77506','22785')
+group by   d_codigo, d_estado, d_ciudad;
