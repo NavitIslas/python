@@ -1,0 +1,164 @@
+/*Numeros de telefono que solo tienen 10 digitos*/
+
+SELECT DISTINCT identificacion 
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)=10;
+
+/*Numeros que inician con 521 y se les deja el 521 */
+
+SELECT distinct identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)=13
+      AND SUBSTRING(identificacion,1,3)=521 ;
+      
+/*Numeros que inician con 521 y se les quita el 521 */
+
+SELECT distinct  SUBSTRING(identificacion,(LEN(identificacion)-10)+1,10) identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)=13
+      AND SUBSTRING(identificacion,1,3)=521 ;
+
+/*Numeros que tienen numeros antes del 521 que precede a los ultimos 10 digitos, y se les quita todo lo que hay antes del 521 */
+
+SELECT distinct  SUBSTRING(identificacion,(LEN(identificacion)-13)+1,10)identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)>13
+      AND SUBSTRING(identificacion,(LEN(identificacion)-13)+1,3)=521;
+
+/*Numeros que tienen numeros antes del 521 que precede a los ultimos 10 digitos, y solo se dejan los ultimos 10 numeros */
+
+SELECT distinct  SUBSTRING(identificacion,(LEN(identificacion)-10)+1,10)identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)>13
+      AND SUBSTRING(identificacion,(LEN(identificacion)-13)+1,3)=521;
+
+/*union de todas las tablas*/
+
+/*Numeros de telefono que solo tienen 10 digitos*/
+SELECT DISTINCT identificacion 
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)=10
+UNION
+/*Numeros que inician con 521 y se les deja el 521 */
+SELECT distinct identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)=13
+      AND SUBSTRING(identificacion,1,3)=521
+UNION
+/*Numeros que inician con 521 y se les quita el 521 */
+SELECT distinct  SUBSTRING(identificacion,(LEN(identificacion)-10)+1,10) identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)=13
+      AND SUBSTRING(identificacion,1,3)=521
+UNION
+/*Numeros que tienen numeros antes del 521 que precede a los ultimos 10 digitos, y se les quita todo lo que hay antes del 521 */
+SELECT distinct  SUBSTRING(identificacion,(LEN(identificacion)-13)+1,10)identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)>13
+      AND SUBSTRING(identificacion,(LEN(identificacion)-13)+1,3)=521
+UNION
+/*Numeros que tienen numeros antes del 521 que precede a los ultimos 10 digitos, y se les quita todo lo que hay antes del 521 */
+SELECT distinct  SUBSTRING(identificacion,(LEN(identificacion)-10)+1,10)identificacion
+FROM(SELECT ca.identificacion 
+     FROM client_contact.caralundi_actualizacionclientes ca
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccli.identificacion
+     FROM client_contact.caralundi_clientes ccli
+     WHERE partition_1 between '20221001' and '20221031'
+     UNION
+     SELECT ccon.identificacion
+     FROM client_contact.caralundi_conversaciones ccon
+     WHERE partition_1 between '20221001' and '20221031')
+WHERE LEN(identificacion)>13
+      AND SUBSTRING(identificacion,(LEN(identificacion)-13)+1,3)=521;
