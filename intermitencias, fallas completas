@@ -1,0 +1,29 @@
+select cuenta, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones
+from (select cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_char(begin_completa,'HH24:MI:SS') as begin_hora,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             to_char(end_completa,'HH24:MI:SS') as end_hora,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+             substring(begintime,9,2) as hora,
+             (substring(productid,2,4)*0.1)::float  as Subida_paquete,
+            substring(productid,2,4)::float as Bajada_paquete,
+            (Subida_paquete * segundo_transcurrido)  as total_megas_subida,
+            (Bajada_paquete * segundo_transcurrido)  as total_megas_bajada,
+            CASE when segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END as sesiones_completas,
+            CASE when   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END as  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE when segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  as interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           where info_day=20221009
+               --and substring(begintime,1,6)::integer = 202210
+               and cuenta = '0113218431'
+               )
+GROUP BY cuenta
