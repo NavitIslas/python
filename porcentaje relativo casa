@@ -1,0 +1,17 @@
+-- Distribucion del porcentaje de uso de los paquetes 
+select * 
+from data_lake.per_porcentaje_relativo limit 100;
+
+select count(*),info_month 
+from data_lake.per_porcentaje_relativo 
+group by info_month;
+
+select count(*),productid 
+from data_lake.per_porcentaje_relativo 
+where info_month=202210 
+group by productid;
+
+select *
+from data_lake.per_porcentaje_relativo 
+where info_month=202210 
+      and porcentaje_subida=' ';
