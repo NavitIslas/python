@@ -1,0 +1,45 @@
+SELECT ROUND(SUM(DECODE(pp.status_flags,0, rbi.scaled_amount 
+                ,8, rbi.scaled_amount 
+                ,1, rbi.scaled_amount 
+                ,4, rbi.scaled_amount 
+                ,9, rbi.scaled_amount 
+                ,12, rbi.scaled_amount 
+                ,DECODE(pp.status_flags ,33554432,CYCLE_FEE_AMT 
+                      ,33554433,CYCLE_FEE_AMT 
+                      ,33554440,CYCLE_FEE_AMT 
+                      ,33554441,CYCLE_FEE_AMT 
+                      ,50331648,CYCLE_FEE_AMT 
+                      ,50331648,CYCLE_FEE_AMT 
+                      , purchase_fee_amt))),0)  precio 
+FROM  (SELECT *
+       FROM data_staging.brm_account_t 
+       WHERE info_day=20221226
+            AND account_no=0114285640
+       ) AS a1
+      JOIN (SELECT *
+            FROM data_staging.brm_service_t 
+            )AS s
+      ON s.account_obj_id0= a1.poid_id0 
+      JOIN (SELECT *
+            FROM data_staging.brm_purchased_product_t 
+            WHERE price_list_name IN ('0') 
+                  AND status!=3
+            )AS pp
+      ON pp.service_obj_id0 = s.poid_id0  AND pp.account_obj_id0=s.account_obj_id0 
+      JOIN (SELECT *
+            FROM data_staging.brm_product_t 
+            )AS p
+      ON p.poid_id0= pp.product_obj_id0 
+      JOIN (SELECT *
+            FROM data_staging.brm_Rate_Plan_T 
+            )AS rp
+      ON rp.Product_Obj_Id0= p.poid_id0 
+      JOIN (SELECT *
+            FROM data_staging.brm_Rate_Bal_Impacts_T 
+            WHERE element_id =484 
+            )AS rbi
+      ON rbi.Obj_Id0= r.Poid_Id0 
+      JOIN (SELECT *
+            FROM data_staging.brm_Rate_T 
+           )AS r
+      ON r.Rate_Plan_Obj_Id0=rp.Poid_Id0; 
