@@ -1,0 +1,86 @@
+CREATE OR REPLACE FUNCTION from_unixtime(epoch BIGINT)
+  RETURNS TIMESTAMP  AS
+'import datetime
+
+return datetime.datetime.fromtimestamp(epoch)
+'
+LANGUAGE plpythonu IMMUTABLE;
+commit;
+
+select account_no ,created_t, from_unixtime(last_status_t) as unix_last_status, last_status_t, status,date(created_t)  as fecha_inicio,
+       date(from_unixtime(last_status_t)) as fecha_termino, DATEDIFF(MM , date(created_t), date(from_unixtime(last_status_t))) as vida,
+       info_day
+from data_staging.brm_account_t
+WHERE info_day='20190516' AND
+      date(from_unixtime(last_status_t)) BETWEEN '2014-01-01' AND '2018-01-01'
+LIMIT 100;
+
+CREATE OR REPLACE FUNCTION from_unixtime(epoch BIGINT)
+  RETURNS TIMESTAMP  AS
+'import datetime
+
+return datetime.datetime.fromtimestamp(epoch)
+'
+LANGUAGE plpythonu IMMUTABLE;
+commit;
+
+SELECT distinct account_no,
+poid_db,
+poid_id0,
+poid_type,
+poid_rev,
+created_t,
+mod_t,
+read_access,
+write_access,
+aac_access,
+aac_package,
+aac_promo_code,
+aac_serial_num,
+aac_source,
+aac_vendor,
+access_code1,
+access_code2,
+account_no,
+attribute,
+account_type,
+gl_segment,
+brand_obj_db,
+brand_obj_id0,
+brand_obj_type,
+brand_obj_rev,
+close_when_t,
+timezone_id,
+currency,
+currency_secondary,
+cust_seg_list,
+group_obj_db,
+group_obj_id0,
+group_obj_type,
+group_obj_rev,
+internal_notes_size,
+item_poid_list,
+bal_grp_obj_db,
+bal_grp_obj_id0,
+bal_grp_obj_type,
+bal_grp_obj_rev,
+next_item_poid_list,
+laststat_cmnt,
+last_status_t,
+lineage,
+locale,
+name,
+status,
+status_flags,
+vat_cert,
+residence_flag,
+incorporated_flag,
+account_tag,
+business_type,
+effective_t,
+object_cache_type
+ 
+FROM data_staging.brm_account_t
+WHERE info_day BETWEEN '20220501' AND '20221115'
+      AND status=10103 
+      AND date(from_unixtime(last_status_t)) between '2022-05-01' and '2022-11-15';
