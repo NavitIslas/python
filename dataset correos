@@ -1,0 +1,116 @@
+--dataset correos
+      SELECT cartera_t.cuenta, cartera_t.fecha_activacion, cartera_t.mes_act, cartera_t.ano_act, cartera_t.vida_cuenta, cartera_t.metodo_pago,
+             cartera_t.morosidad, cartera_t.score, cartera_t.atraso, cartera_t.estatus_cta, cartera_t.ciclo, cartera_t.saldo_serv,
+             edad_genero.birthday, edad_genero.genero, edad_genero.edad,
+             nse.nse,
+             enviados.subscriberkey_enviado,
+             abiertos.subscriberkey_abierto,
+             clicks.subscriberkey_click,
+             CASE WHEN enviados.subscriberkey_enviado!=' ' AND cartera_t.estatus_cta='Activo' THEN 1
+                  ELSE 0
+             END AS Activo_e,
+             CASE WHEN enviados.subscriberkey_enviado!=' ' AND cartera_t.estatus_cta='Cancelada Involuntaria' THEN 1
+                  ELSE 0
+             END AS Cancelada_Involuntaria_e,
+             CASE WHEN enviados.subscriberkey_enviado!=' ' AND cartera_t.estatus_cta='Cerrada' THEN 1
+                  ELSE 0
+             END AS Cerrada_e,
+             CASE WHEN enviados.subscriberkey_enviado!=' ' AND cartera_t.estatus_cta='Deducción Fiscal' THEN 1
+                  ELSE 0
+             END AS Deducción_Fiscal_e,
+             CASE WHEN enviados.subscriberkey_enviado!=' ' AND cartera_t.estatus_cta='Inactivo' THEN 1
+                  ELSE 0
+             END AS Inactivo_e,
+             CASE WHEN enviados.subscriberkey_enviado!=' ' AND cartera_t.estatus_cta='Nulo_Can' THEN 1
+                  ELSE 0
+             END AS Nulo_Can_e,
+             CASE WHEN enviados.subscriberkey_enviado!=' ' AND cartera_t.estatus_cta='Nulo_Susp' THEN 1
+                  ELSE 0
+             END AS Nulo_Susp_e,
+             CASE WHEN abiertos.subscriberkey_abierto!=' ' AND cartera_t.estatus_cta='Activo' THEN 1
+                  ELSE 0
+             END AS Activo_a,
+             CASE WHEN abiertos.subscriberkey_abierto!=' ' AND cartera_t.estatus_cta='Cancelada Involuntaria' THEN 1
+                  ELSE 0
+             END AS Cancelada_Involuntaria_a,
+             CASE WHEN abiertos.subscriberkey_abierto!=' ' AND cartera_t.estatus_cta='Cerrada' THEN 1
+                  ELSE 0
+             END AS Cerrada_a,
+             CASE WHEN abiertos.subscriberkey_abierto!=' ' AND cartera_t.estatus_cta='Deducción Fiscal' THEN 1
+                  ELSE 0
+             END AS Deducción_Fiscal_a,
+             CASE WHEN abiertos.subscriberkey_abierto!=' ' AND cartera_t.estatus_cta='Inactivo' THEN 1
+                  ELSE 0
+             END AS Inactivo_a,
+             CASE WHEN abiertos.subscriberkey_abierto!=' ' AND cartera_t.estatus_cta='Nulo_Can' THEN 1
+                  ELSE 0
+             END AS Nulo_Can_a,
+             CASE WHEN abiertos.subscriberkey_abierto!=' ' AND cartera_t.estatus_cta='Nulo_Susp' THEN 1
+                  ELSE 0
+             END AS Nulo_Susp_a,
+             CASE WHEN clicks.subscriberkey_click!=' ' AND cartera_t.estatus_cta='Activo' THEN 1
+                  ELSE 0
+             END AS Activo_c,
+             CASE WHEN clicks.subscriberkey_click!=' ' AND cartera_t.estatus_cta='Cancelada Involuntaria' THEN 1
+                  ELSE 0
+             END AS Cancelada_Involuntaria_c,
+             CASE WHEN clicks.subscriberkey_click!=' ' AND cartera_t.estatus_cta='Cerrada' THEN 1
+                  ELSE 0
+             END AS Cerrada_c,
+             CASE WHEN clicks.subscriberkey_click!=' ' AND cartera_t.estatus_cta='Deducción Fiscal' THEN 1
+                  ELSE 0
+             END AS Deducción_Fiscal_c,
+             CASE WHEN clicks.subscriberkey_click!=' ' AND cartera_t.estatus_cta='Inactivo' THEN 1
+                  ELSE 0
+             END AS Inactivo_c,
+             CASE WHEN clicks.subscriberkey_click!=' ' AND cartera_t.estatus_cta='Nulo_Can' THEN 1
+                  ELSE 0
+             END AS Nulo_Can_c,
+             CASE WHEN clicks.subscriberkey_click!=' ' AND cartera_t.estatus_cta='Nulo_Susp' THEN 1
+                  ELSE 0
+             END AS Nulo_Susp_e
+             FROM(SELECT DISTINCT cuenta, 
+                         fecha_activacion, 
+                         EXTRACT(MONTH FROM CAST(fecha_activacion AS DATE)) AS mes_act, 
+                         EXTRACT(YEAR FROM CAST(fecha_activacion AS DATE)) AS ano_act, 
+                         MONTHS_BETWEEN(CURRENT_DATE, TO_DATE(fecha_activacion, 'YYYY-MM-DD')) as vida_cuenta, 
+                         metodo_pago, 
+                         morosidad, 
+                         score, 
+                         atraso, 
+                         estatus_cta, 
+                         ciclo, 
+                         saldo_serv -- que es saldo servido? 
+                  FROM black_box.cartera 
+                  WHERE info_day = 20221130 ) as cartera_t
+
+
+            LEFT JOIN ( select cuenta,--#falta genero 
+                               birthday, 
+                               genero, 
+                               edad 
+                        from bi.ds_edad_genero ) AS edad_genero 
+            ON cartera_t.cuenta = edad_genero.cuenta 
+            --#nse + cuenta 
+            LEFT JOIN( select cuenta, 
+                              nse 
+                       from data_lake.nse 
+                       where info_day in (select max(info_day) from data_lake.nse) 
+                      )  as nse 
+            ON cartera_t.cuenta = nse.cuenta
+
+            LEFT JOIN(SELECT subscriberkey as subscriberkey_enviado
+                      FROM  client_contact.slf_email_send_sent
+                      WHERE info_day BETWEEN 20221101 AND 20221130) as enviados
+            ON cartera_t.cuenta = enviados.subscriberkey_enviado
+            
+            LEFT JOIN(SELECT subscriberkey as subscriberkey_abierto
+                 FROM client_contact.slf_email_send_opens
+                 WHERE info_day BETWEEN 20221101 AND 20221130) as abiertos
+            ON cartera_t.cuenta = abiertos.subscriberkey_abierto
+            
+            LEFT JOIN(SELECT subscriberkey as subscriberkey_click
+                 FROM client_contact.slf_email_send_clicks
+                 WHERE info_day BETWEEN 20221101 AND 20221130) as clicks
+            ON cartera_t.cuenta = clicks.subscriberkey_click
+            limit 100;
