@@ -1,0 +1,720 @@
+--Enero
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220101 AND 20220131
+                 AND substring(begintime,1,6)::integer = 202201
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220101 AND 20220131
+                AND substring(begintime,1,6)::integer = 202201
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--febrero
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220201 AND 20220228
+                 AND substring(begintime,1,6)::integer = 202202
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220201 AND 20220228
+                AND substring(begintime,1,6)::integer = 202202
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--marzo
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220301 AND 20220331
+                 AND substring(begintime,1,6)::integer = 202203
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220301 AND 20220331
+                AND substring(begintime,1,6)::integer = 202203
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--abril
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220401 AND 20220430
+                 AND substring(begintime,1,6)::integer = 202204
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220401 AND 20220430
+                AND substring(begintime,1,6)::integer = 202204
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--mayo
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220501 AND 20220531
+                 AND substring(begintime,1,6)::integer = 202205
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220501 AND 20220531
+                AND substring(begintime,1,6)::integer = 202205
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--junio
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220601 AND 20220630
+                 AND substring(begintime,1,6)::integer = 202206
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220601 AND 20220630
+                AND substring(begintime,1,6)::integer = 202206
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--julio
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220701 AND 20220731
+                 AND substring(begintime,1,6)::integer = 202207
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220701 AND 20220731
+                AND substring(begintime,1,6)::integer = 202207
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+
+--agosto
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220801 AND 20220831
+                 AND substring(begintime,1,6)::integer = 202208
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220801 AND 20220831
+                AND substring(begintime,1,6)::integer = 202208
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--septiembre
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20220901 AND 20220930
+                 AND substring(begintime,1,6)::integer = 202209
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20220901 AND 20220930
+                AND substring(begintime,1,6)::integer = 202209
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--octubre
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20221001 AND 20221031
+                 AND substring(begintime,1,6)::integer = 202210
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20221001 AND 20221031
+                AND substring(begintime,1,6)::integer = 202210
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--noviembre
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20221101 AND 20221130
+                 AND substring(begintime,1,6)::integer = 202211
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20221101 AND 20221130
+                AND substring(begintime,1,6)::integer = 202211
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
+
+--diciembre
+SELECT t1.semana, t1.num_sesiones_completas, t1.num_sesiones_incompletas, t1.num_interrupciones, t2.cambio_ip
+FROM((SELECT semana, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+      FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+            EXTRACT(WEEK FROM begin_completa) AS semana,
+            CASE WHEN segundo_transcurrido >= 900 THEN 1
+                 ELSE 0
+            END AS sesiones_completas,
+            CASE WHEN   segundo_transcurrido < 899 THEN 1
+                 ELSE 0
+            END AS  sesiones_incompletas,
+            ---when segundo_transcurrido >=1 and segundo_transcurrido < 898 then 'interrupcion'
+            CASE WHEN segundo_transcurrido = 0 THEN 1 ELSE 0
+            END  AS interrupciones
+           from data_lake.edr_aaa
+         --where info_day between 20221001 and 20221031
+           WHERE info_day BETWEEN 20221201 AND 20221231
+                 AND substring(begintime,1,6)::integer = 202212
+                 AND cuenta IN (SELECT b.idcuentabrm__c
+                                --cp, estado unicamente de las colonias del DF
+                                FROM ((SELECT  d_codigo, d_estado
+                                       FROM nuevos_negocios.sepomex 
+                                       WHERE d_estado='Ciudad de México') AS a      
+                                       --cuentas 
+                                       JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                             FROM data_staging.slf_cuentafactura__c 
+                                             WHERE info_day='20221230') AS b
+                                       ON a.d_codigo=b.codigopostalinstalacion__c)))
+     GROUP BY semana) AS t1
+JOIN(
+     SELECT semana, COUNT(ip_cliente) AS cambio_ip
+     FROM(SELECT semana, ip_cliente
+     FROM(SELECT cuenta,
+                 to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                 ip_cliente,
+                 EXTRACT(WEEK FROM begin_completa) AS semana
+          FROM data_lake.edr_aaa
+          WHERE info_day BETWEEN 20221201 AND 20221231
+                AND substring(begintime,1,6)::integer = 202212
+                --and begintime=endtime
+                     AND cuenta IN (SELECT b.idcuentabrm__c
+                                    --cp, estado unicamente de las colonias del DF
+                                    FROM ((SELECT  d_codigo, d_estado
+                                           FROM nuevos_negocios.sepomex 
+                                           WHERE d_estado='Ciudad de México') AS a      
+                                           --cuentas 
+                                           JOIN (SELECT idcuentabrm__c, codigopostalinstalacion__c
+                                                 FROM data_staging.slf_cuentafactura__c 
+                                                 WHERE info_day='20221230') AS b
+                                           ON a.d_codigo=b.codigopostalinstalacion__c)))
+          GROUP BY semana, ip_cliente)
+      GROUP BY semana) AS t2
+ON t1.semana=t2.semana);
