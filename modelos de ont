@@ -1,0 +1,11 @@
+select cuenta, COUNT(model_ont) AS num_ont,
+       listagg(distinct model_ont,'|') 
+       within group (order by cuenta) as ont_md,
+       listagg(distinct vendor_ont,'|') 
+       within  group (order by cuenta) as vendor_ont,
+       listagg(distinct version_fw,'|') 
+       within  group (order by cuenta) as version_fw
+from  bi.cta_model_ont 
+where info_day=20221101
+      and cuenta = '1.3778928'
+group by cuenta;
