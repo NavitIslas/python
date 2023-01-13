@@ -1,0 +1,8 @@
+SELECT cuenta, estatus_cta, MAX(fecha_informacion)
+FROM black_box.cartera 
+WHERE info_day = 20221101
+      --AND SUBSTRING(cuenta,1,2) = '1.' OR SUBSTRING(cuenta,1,3) IN ('010','011')
+      --AND cuenta = '0103751665'
+GROUP BY cuenta, estatus_cta
+HAVING MAX(fecha_informacion)<=20221101
+limit 110;
