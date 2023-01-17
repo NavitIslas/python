@@ -1,0 +1,12 @@
+#importar librerias
+import numpy as np
+from datetime import datetime
+import awswrangler as wr
+import pandas as pd
+
+#conexiones a redshift
+conn = wr.redshift.connect("redshift_devsie") # redshif viejito
+conn_aurora = wr.postgresql.connect("cctp_sandbox_aurora_master_instance") # aurora
+con_redshift_2 = wr.redshift.connect("redshift_cctp_bi") #nuevo
+
+
