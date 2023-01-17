@@ -1,0 +1,13 @@
+create table public.catalogo_noduplicados(
+coredomain varchar(100),
+category varchar(100)
+);
+commit;
+
+COPY public.catalogo_noduplicados
+from 's3://data-lake-tp/dominios_duplicados_nss/20221209/dominios duplicados.csv'
+IAM_ROLE 'arn:aws:iam::903746939682:role/ReadTP'
+ACCEPTINVCHARS
+delimiter '\t'
+maxerror 1000;
+COMMIT;
