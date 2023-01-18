@@ -1,0 +1,54 @@
+# Navit cargas de info fallas internet de mayo a diciembre
+## Importar librerias
+import numpy as np
+from datetime import datetime
+import awswrangler as wr
+import pandas as pd
+## Conexion a Redshift
+con = wr.redshift.connect("redshift_devsie")
+## variables
+meses_list=["junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+num_list=[6,7,8,9,10,11,12]
+fecha_inicio=[20220601,20220701,20220801,20220901,20221001,20221101,20221201]
+fecha_termino=[20220630,20220731,20220831,20220930,20221031,20221130,20221231]
+## creacion de tablas publicas
+for mes, num, fechai, fechat in zip(meses_list, num_list, fecha_inicio, fecha_termino):
+    import time
+    inicio = time.time()
+    print(f"Inicio de cración de la tabla: fallas_{mes}_2022, con fecha de inicio: {fechai} y fecha de termino: {fechat}")
+    sql_tabla = f"""CREATE TABLE public.fallas_{mes}_2022 AS (
+                      SELECT cuenta, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+                      SUM(interrupciones) AS num_interrupciones       
+                      FROM (SELECT cuenta,productid,
+                                   to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+                                   to_char(begin_completa,'HH24:MI:SS') as begin_hora,
+                                   to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+                                   to_char(end_completa,'HH24:MI:SS') as end_hora,
+                                   DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+                                   CASE WHEN segundo_transcurrido >= 900 THEN 1
+                                        ELSE 0
+                                   END as sesiones_completas,
+                                   CASE WHEN   segundo_transcurrido>=1 AND segundo_transcurrido<= 899 THEN 1
+                                        ELSE 0
+                                   END as  sesiones_incompletas,
+                                   CASE WHEN segundo_transcurrido = 0 THEN 1 
+                                        ELSE 0
+                                   END  as interrupciones,
+                                   {num} AS mes
+                             FROM data_lake.edr_aaa
+                             WHERE info_day BETWEEN {fechai} AND {fechat})
+                       GROUP BY cuenta);
+                       """
+
+
+
+    conn = wr.redshift.connect("redshift_devsie")
+
+    with conn.cursor() as cursor:
+        cursor.execute(sql_tabla)
+        cursor.execute("commit;")
+        #print(cursor.fetchall()) solo para imprimir el resultado
+    conn.close()
+    print(f"Termino de crearse la tabla: fallas_{mes}_2022, con fecha de inicio: {fechai} y fecha de termino: {fechat}")
+    fin = time.time()
+    print(fin-inicio) 
