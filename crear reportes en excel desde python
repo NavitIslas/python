@@ -1,0 +1,48 @@
+
+Información
+Editar
+No se ha seleccionado ninguna línea.
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 28 17:13:54 2022
+
+@author: aroman
+"""
+# %% Importar bibliotecas
+import pandas as pd
+import awswrangler as wr
+# %% Conexion a redshift
+con = wr.redshift.connect("redshift_devsie")
+# %% Nombres
+names_list = ["name","nombre__c"]
+
+# %% Consulta conteo
+for field_name in names_list:
+    
+    print(f"Tabla: {field_name}")
+    print("Conteo")
+    sql_conteo = f"""SELECT case when {field_name}_dq = {field_name} then 'igual' 
+                      else 'cambio' end as p_{field_name}_dq,
+                      count(p_{field_name}_dq) as total
+                      from dev_qa.gob_slf_cuentafactura__c 
+                      group by p_{field_name}_dq"""
+    
+    df_conteo = wr.redshift.read_sql_query(sql_conteo,con)
+    # %% Consulta muestra
+    print("Muestra")
+    sql_muestra = f"""SELECT {field_name}, 
+                       {field_name}_dq,  
+                       {field_name}_val
+                       from dev_qa.gob_slf_cuentafactura__c 
+                       where {field_name}_dq != name
+                       limit 20"""
+    
+    df_muestra = wr.redshift.read_sql_query(sql_muestra,con)
+
+    # %% Escritura en dos hojas de excel
+    with pd.ExcelWriter(f"~/{field_name}.xlsx") as writer:
+        df_conteo.to_excel(writer, sheet_name='Conteo')
+        df_muestra.to_excel(writer, sheet_name='Muestra')
+    
+con.close()
