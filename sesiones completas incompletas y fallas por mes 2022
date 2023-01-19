@@ -1,0 +1,26 @@
+--MARZO
+CREATE TABLE public.fallas_marzo_2022 AS
+SELECT cuenta, SUM(sesiones_completas) AS num_sesiones_completas, SUM(sesiones_incompletas) AS num_sesiones_incompletas,
+       SUM(interrupciones) AS num_interrupciones       
+FROM (
+      --Calcula el número de seciones completas, imcompletas e interrumpidas por cuenta
+      SELECT cuenta,productid,
+             to_timestamp (begintime, 'YYYYMMDDHH24MISS',true) as begin_completa,
+             to_char(begin_completa,'HH24:MI:SS') as begin_hora,
+             to_timestamp (endtime, 'YYYYMMDDHH24MISS',true) as end_completa,
+             to_char(end_completa,'HH24:MI:SS') as end_hora,
+             DATEDIFF(sec,begin_completa::timestamp,end_completa::timestamp) as segundo_transcurrido,
+             CASE WHEN segundo_transcurrido >= 900 THEN 1
+                  ELSE 0
+             END as sesiones_completas,
+             CASE WHEN   segundo_transcurrido>=1 AND segundo_transcurrido<= 899 THEN 1
+                  ELSE 0
+             END as  sesiones_incompletas,
+             CASE WHEN segundo_transcurrido = 0 THEN 1 
+                  ELSE 0
+             END  as interrupciones,
+             1 AS mes
+        FROM data_lake.edr_aaa
+        WHERE info_day BETWEEN 20220301 AND 20220331)
+GROUP BY cuenta;
+COMMIT;
