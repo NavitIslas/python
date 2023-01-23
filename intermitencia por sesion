@@ -1,0 +1,138 @@
+SELECT cuenta,
+             productid,
+             TO_TIMESTAMP(begintime,'YYYYMMDDHH24MISS',TRUE) AS begin_completa,
+             TO_CHAR(begin_completa,'HH24:MI:SS') AS begin_hora,
+             TO_TIMESTAMP(endtime,'YYYYMMDDHH24MISS',TRUE) AS end_completa,
+             TO_CHAR(end_completa,'HH24:MI:SS') AS end_hora,
+             DATEDIFF(sec,begin_completa::TIMESTAMP,end_completa::TIMESTAMP) AS segundo_transcurrido,
+             CASE
+               WHEN segundo_transcurrido >= 900 THEN 1
+               ELSE 0
+             END AS sesiones_completas,
+             CASE
+               WHEN segundo_transcurrido >= 1 AND segundo_transcurrido <= 899 THEN 1
+               ELSE 0
+             END AS sesiones_incompletas,
+             CASE
+               WHEN segundo_transcurrido = 0 THEN 1
+               ELSE 0
+             END AS interrupciones,
+             4 AS mes,
+             CASE 
+               WHEN begin_hora>='00:00:00' AND begin_hora<='00:15:00' THEN 1
+               ELSE O
+             END AS S1,
+             CASE 
+               WHEN begin_hora>'00:15:00' AND begin_hora<='00:30:00' THEN 1
+               ELSE O
+             END AS S2,
+             CASE 
+               WHEN begin_hora>'00:30:00' AND begin_hora<='00:45:00' THEN 1
+               ELSE O
+             END AS S3,
+             CASE 
+               WHEN begin_hora>'00:45:00' AND begin_hora<='01:00:00' THEN 1
+               ELSE O
+             END AS S4,
+             CASE 
+               WHEN begin_hora>'01:00:00' AND begin_hora<='01:15:00' THEN 1
+               ELSE O
+             END AS S5,
+             CASE 
+               WHEN begin_hora>'01:15:00' AND begin_hora<='01:30:00' THEN 1
+               ELSE O
+             END AS S6, 
+             CASE 
+               WHEN begin_hora>'01:30:00' AND begin_hora<='01:45:00' THEN 1
+               ELSE O
+             END AS S7,
+             CASE 
+               WHEN begin_hora>'01:45:00' AND begin_hora<='02:00:00' THEN 1
+               ELSE O
+             END AS S8,
+             CASE 
+               WHEN begin_hora>'02:00:00' AND begin_hora<='02:15:00' THEN 1
+               ELSE O
+             END AS S9,
+             CASE 
+               WHEN begin_hora>'02:15:00' AND begin_hora<='02:30:00' THEN 1
+               ELSE O
+             END AS S10,
+             CASE 
+               WHEN begin_hora>'02:30:00' AND begin_hora<='02:45:00' THEN 1
+               ELSE O
+             END AS S11,
+             CASE 
+               WHEN begin_hora>'02:45:00' AND begin_hora<='03:00:00' THEN 1
+               ELSE O
+             END AS S12,
+             CASE 
+               WHEN begin_hora>'03:00:00' AND begin_hora<='03:15:00' THEN 1
+               ELSE O
+             END AS S13,
+             CASE 
+               WHEN begin_hora>'03:15:00' AND begin_hora<='03:30:00' THEN 1
+               ELSE O
+             END AS S14,
+             CASE 
+               WHEN begin_hora>'03:30:00' AND begin_hora<='03:45:00' THEN 1
+               ELSE O
+             END AS S15,
+             CASE 
+               WHEN begin_hora>'03:45:00' AND begin_hora<='04:00:00' THEN 1
+               ELSE O
+             END AS S16,
+             CASE 
+               WHEN begin_hora>'04:00:00' AND begin_hora<='04:15:00' THEN 1
+               ELSE O
+             END AS S17,
+             CASE 
+               WHEN begin_hora>'04:15:00' AND begin_hora<='04:30:00' THEN 1
+               ELSE O
+             END AS S18,
+             CASE 
+               WHEN begin_hora>'04:30:00' AND begin_hora<='04:45:00' THEN 1
+               ELSE O
+             END AS S19,
+             CASE 
+               WHEN begin_hora>'04:45:00' AND begin_hora<='05:00:00' THEN 1
+               ELSE O
+             END AS S20,
+             CASE 
+               WHEN begin_hora>'05:00:00' AND begin_hora<='05:15:00' THEN 1
+               ELSE O
+             END AS S21,
+             CASE 
+               WHEN begin_hora>'05:15:00' AND begin_hora<='05:30:00' THEN 1
+               ELSE O
+             END AS S22,
+             CASE 
+               WHEN begin_hora>'05:30:00' AND begin_hora<='05:45:00' THEN 1
+               ELSE O
+             END AS S23,
+             CASE 
+               WHEN begin_hora>'05:45:00' AND begin_hora<='06:00:00' THEN 1
+               ELSE O
+             END AS S24,
+             CASE 
+               WHEN begin_hora>'06:00:00' AND begin_hora<='06:15:00' THEN 1
+               ELSE O
+             END AS S25,
+             CASE 
+               WHEN begin_hora>'06:15:00' AND begin_hora<='06:30:00' THEN 1
+               ELSE O
+             END AS S26,
+             CASE 
+               WHEN begin_hora>'06:30:00' AND begin_hora<='06:45:00' THEN 1
+               ELSE O
+             END AS S27,
+             CASE 
+               WHEN begin_hora>'06:45:00' AND begin_hora<='07:00:00' THEN 1
+               ELSE O
+             END AS S28,
+             
+
+      FROM data_lake.edr_aaa
+      WHERE info_day BETWEEN 20220401 AND 20220430
+      AND   SUBSTRING(begintime,1,6)::INTEGER = 202204
+      AND   cuenta = '0100390500';
