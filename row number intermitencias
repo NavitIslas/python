@@ -1,0 +1,139 @@
+SELECT cuenta,
+             productid,
+             TO_TIMESTAMP(begintime,'YYYYMMDDHH24MISS',TRUE) AS begin_completa,
+             TO_CHAR(begin_completa,'HH24:MI:SS') AS begin_hora,
+             TO_TIMESTAMP(endtime,'YYYYMMDDHH24MISS',TRUE) AS end_completa,
+             TO_CHAR(end_completa,'HH24:MI:SS') AS end_hora,
+             DATEDIFF(sec,begin_completa::TIMESTAMP,end_completa::TIMESTAMP) AS segundo_transcurrido,
+             CASE
+               WHEN segundo_transcurrido >= 900 THEN 1
+               ELSE 0
+             END AS sesiones_completas,
+             CASE
+               WHEN segundo_transcurrido >= 1 AND segundo_transcurrido <= 899 THEN 1
+               ELSE 0
+             END AS sesiones_incompletas,
+             CASE
+               WHEN segundo_transcurrido = 0 THEN 1
+               ELSE 0
+             END AS interrupciones,
+             4 AS mes
+      FROM data_lake.edr_aaa
+      WHERE info_day BETWEEN 20220401 AND 20220430
+      AND   SUBSTRING(begintime,1,6)::INTEGER = 202204
+      AND   cuenta = '0100390500';
+      
+
+WITH abril AS
+(
+SELECT cuenta, productid, begin_completa, begin_hora, end_completa, end_hora, segundo_transcurrido, 
+       ROW_NUMBER() OVER (PARTITION BY begin_completa ORDER BY end_completa DESC) AS row_num
+FROM(SELECT cuenta,
+             productid,
+             TO_TIMESTAMP(begintime,'YYYYMMDDHH24MISS',TRUE) AS begin_completa,
+             TO_CHAR(begin_completa,'HH24:MI:SS') AS begin_hora,
+             TO_TIMESTAMP(endtime,'YYYYMMDDHH24MISS',TRUE) AS end_completa,
+             TO_CHAR(end_completa,'HH24:MI:SS') AS end_hora,
+             DATEDIFF(sec,begin_completa::TIMESTAMP,end_completa::TIMESTAMP) AS segundo_transcurrido,
+             CASE
+               WHEN segundo_transcurrido >= 900 THEN 1
+               ELSE 0
+             END AS sesiones_completas,
+             CASE
+               WHEN segundo_transcurrido >= 1 AND segundo_transcurrido <= 899 THEN 1
+               ELSE 0
+             END AS sesiones_incompletas,
+             CASE
+               WHEN segundo_transcurrido = 0 THEN 1
+               ELSE 0
+             END AS interrupciones,
+             4 AS mes
+      FROM data_lake.edr_aaa
+      WHERE info_day BETWEEN 20220401 AND 20220430
+      AND   SUBSTRING(begintime,1,6)::INTEGER = 202204
+      AND   cuenta = '0100390500')
+)
+SELECT cuenta, productid, begin_completa, begin_hora, end_completa, end_hora, segundo_transcurrido, row_num
+FROM abril
+WHERE row_num=1;
+
+
+
+
+
+
+WITH abril AS
+(
+SELECT cuenta, productid, begin_completa, begin_hora, end_completa, end_hora, segundo_transcurrido, 
+       sesiones_completas, sesiones_incompletas, interrupciones,
+       ROW_NUMBER() OVER (PARTITION BY begin_completa ORDER BY end_completa DESC) AS row_num
+FROM(SELECT cuenta,
+             productid,
+             TO_TIMESTAMP(begintime,'YYYYMMDDHH24MISS',TRUE) AS begin_completa,
+             TO_CHAR(begin_completa,'HH24:MI:SS') AS begin_hora,
+             TO_TIMESTAMP(endtime,'YYYYMMDDHH24MISS',TRUE) AS end_completa,
+             TO_CHAR(end_completa,'HH24:MI:SS') AS end_hora,
+             DATEDIFF(sec,begin_completa::TIMESTAMP,end_completa::TIMESTAMP) AS segundo_transcurrido,
+             CASE
+               WHEN segundo_transcurrido >= 900 THEN 1
+               ELSE 0
+             END AS sesiones_completas,
+             CASE
+               WHEN segundo_transcurrido >= 1 AND segundo_transcurrido <= 899 THEN 1
+               ELSE 0
+             END AS sesiones_incompletas,
+             CASE
+               WHEN segundo_transcurrido = 0 THEN 1
+               ELSE 0
+             END AS interrupciones,
+             4 AS mes
+      FROM data_lake.edr_aaa
+      WHERE info_day BETWEEN 20220401 AND 20220430
+      AND   SUBSTRING(begintime,1,6)::INTEGER = 202204
+      AND   cuenta = '0100390500')
+)
+SELECT cuenta, productid, begin_completa, begin_hora, end_completa, end_hora, segundo_transcurrido, 
+       sesiones_completas, sesiones_incompletas, interrupciones, row_num
+FROM abril
+WHERE row_num=1;
+
+
+
+
+
+WITH abril AS
+(
+SELECT cuenta, productid, begin_completa, begin_hora, end_completa, end_hora, segundo_transcurrido, 
+       sesiones_completas, sesiones_incompletas, interrupciones,
+       ROW_NUMBER() OVER (PARTITION BY begin_completa ORDER BY end_completa DESC) AS row_num
+FROM(SELECT cuenta,
+             productid,
+             TO_TIMESTAMP(begintime,'YYYYMMDDHH24MISS',TRUE) AS begin_completa,
+             TO_CHAR(begin_completa,'HH24:MI:SS') AS begin_hora,
+             TO_TIMESTAMP(endtime,'YYYYMMDDHH24MISS',TRUE) AS end_completa,
+             TO_CHAR(end_completa,'HH24:MI:SS') AS end_hora,
+             DATEDIFF(sec,begin_completa::TIMESTAMP,end_completa::TIMESTAMP) AS segundo_transcurrido,
+             CASE
+               WHEN segundo_transcurrido >= 900 THEN 1
+               ELSE 0
+             END AS sesiones_completas,
+             CASE
+               WHEN segundo_transcurrido >= 1 AND segundo_transcurrido <= 899 THEN 1
+               ELSE 0
+             END AS sesiones_incompletas,
+             CASE
+               WHEN segundo_transcurrido = 0 THEN 1
+               ELSE 0
+             END AS interrupciones,
+             4 AS mes
+      FROM data_lake.edr_aaa
+      WHERE info_day BETWEEN 20220401 AND 20220430
+      AND   SUBSTRING(begintime,1,6)::INTEGER = 202204
+      AND   cuenta = '0100390500')
+)
+SELECT cuenta, SUM(segundo_transcurrido) AS segundo_transcurrido, 
+       SUM(sesiones_completas) AS sesiones_completas, SUM(sesiones_incompletas) AS sesiones_incompletas, 
+       SUM(interrupciones) AS interrupciones
+FROM abril
+WHERE row_num=1
+GROUP BY cuenta;
