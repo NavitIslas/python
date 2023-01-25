@@ -1,6 +1,0 @@
-select pid, trim(starttime) as start,
-duration, (duration/1000000)/3600::float as dur_hr, trim(user_name) as user,
-substring (query,1,20000) as querytxt 
-from stv_recents
-where status = 'Running';
-select pg_terminate_backend(1073947535);
